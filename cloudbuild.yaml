@@ -1,0 +1,6 @@
+steps:
+  - id: "npm install"
+    name: "gcr.io/cloud-builders/npm"
+    args: ["install", "--prefix", "./functions"]
+  - name: gcr.io/mc-play-date-scheduler/firebase
+    args: ["deploy", "--project=mc-play-date-scheduler", "--only=functions"]
