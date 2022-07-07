@@ -32,3 +32,12 @@ exports.readById = async (req, res) => {
     res.status(400).send(error.message);
   }
 };
+
+exports.updateById = async (req, res) => {
+  try {
+    await db.collection('user').doc(req.params.userId).update(req.body);
+    res.send('Record updated successfuly');
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
