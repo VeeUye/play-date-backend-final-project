@@ -23,3 +23,12 @@ exports.read = async (_, res) => {
     res.status(400).send(error.message);
   }
 };
+
+exports.readById = async (req, res) => {
+  try {
+    const snapshot = await db.collection('user').doc(req.params.userId).get();
+    res.send({ id: snapshot.id, ...snapshot.data() });
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
