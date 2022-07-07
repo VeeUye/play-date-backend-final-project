@@ -15,7 +15,9 @@ exports.create = async (req, res) => {
 exports.read = async (_, res) => {
   try {
     const snapshot = await db.collection('user').get();
-    const userArray = snapshot.docs.map((doc) => doc.data());
+    const userArray = snapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
+    });
     res.send(userArray);
   } catch (error) {
     res.status(400).send(error.message);
