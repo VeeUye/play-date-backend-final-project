@@ -41,3 +41,12 @@ exports.updateById = async (req, res) => {
     res.status(400).send(error.message);
   }
 };
+
+exports.deleteById = async (req, res) => {
+  try {
+    await db.collection('user').doc(req.params.userId).delete();
+    res.send('Record deleted successfuly');
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
