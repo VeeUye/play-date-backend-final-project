@@ -6,6 +6,11 @@ const { db } = require('../db');
 const JSDOtoTimestamp = (d) => {
  return Timestamp.fromDate(new Date(d));
 }
+
+const TimestampToJSDO = (d) => {
+  return new Date(d*1000);
+ }
+ 
  
 
 exports.create = async (req, res) => {
@@ -21,17 +26,21 @@ exports.create = async (req, res) => {
  };
  
 
-exports.read = async (_, res) => {
+ exports.read = async (_, res) => {
   try {
     const snapshot = await db.collection('events').get();
     const eventsArray = snapshot.docs.map((doc) => {
-      return { id: doc.id, ...doc.data() };
+      let event = { id: doc.id, ...doc.data() };
+      event.date_start = TimestampToJSDO(event.date_start._seconds);
+      event.date_end = TimestampToJSDO(event.date_end._seconds);
+      return event;
     });
     res.send(eventsArray);
   } catch (error) {
     res.status(400).send(error.message);
   }
-};
+ };
+ 
 
 exports.readById = async (req, res) => {
   try {
