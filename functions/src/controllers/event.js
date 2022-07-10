@@ -1,16 +1,25 @@
 'use strict';
-
+ 
+const { Timestamp } = require('firebase-admin/firestore');
 const { db } = require('../db');
+ 
+const JSDOtoTimestamp = (d) => {
+ return Timestamp.fromDate(new Date(d));
+}
+ 
 
 exports.create = async (req, res) => {
   try {
-    const data = req.body;
+    let data = req.body;
+    data.date_start = JSDOtoTimestamp(data.date_start);
+    data.date_end = JSDOtoTimestamp(data.date_end);
     await db.collection('events').doc().set(data);
     res.status(201).send('Record saved successfuly');
   } catch (error) {
     res.status(400).send(error.message);
   }
-};
+ };
+ 
 
 exports.read = async (_, res) => {
   try {
