@@ -36,11 +36,11 @@ exports.readById = async (req, res) => {
 exports.readUserFriends = async (req, res) => {
   try {
     const snapshot = await db.collection('user').doc(req.params.userId).get();
-    const userFriends = await db
+    const userFriendsFilter = await db
       .collection('user')
       .where(FieldPath.documentId(), 'in', snapshot.data().friends)
       .get();
-    const userFriendsArray = userFriends.docs.map((doc) => {
+    const userFriendsArray = userFriendsFilter.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };
     });
     res.send(userFriendsArray);
