@@ -41,16 +41,18 @@ exports.create = async (req, res) => {
   }
  };
  
-
 exports.readById = async (req, res) => {
   try {
     const snapshot = await db.collection('events').doc(req.params.eventId).get();
-    res.send({ id: snapshot.id, ...snapshot.data() });
+    let event = { id: snapshot.id, ...snapshot.data() }
+    event.date_start = TimestampToJSDO(event.date_start._seconds);
+    event.date_end = TimestampToJSDO(event.date_end._seconds);
+    res.send(event);
   } catch (error) {
     res.status(400).send(error.message);
   }
-};
-
+ };
+ 
 exports.updateById = async (req, res) => {
   try {
     await db.collection('events').doc(req.params.eventId).update(req.body);
