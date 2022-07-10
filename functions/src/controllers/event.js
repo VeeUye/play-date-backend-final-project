@@ -11,8 +11,7 @@ const TimestampToJSDO = (d) => {
   return new Date(d*1000);
  }
  
- 
-
+// POST ~/events
 exports.create = async (req, res) => {
   try {
     let data = req.body;
@@ -25,7 +24,7 @@ exports.create = async (req, res) => {
   }
  };
  
-
+// GET ~/events
  exports.read = async (_, res) => {
   try {
     const snapshot = await db.collection('events').get();
@@ -40,7 +39,29 @@ exports.create = async (req, res) => {
     res.status(400).send(error.message);
   }
  };
- 
+
+//  GET ~/events/user-events/{userId}
+ exports.readUserEvents = async (req, res) => {
+  try {
+    const {userId} = req.params; 
+    const eventsRef = db.collection('events');
+    const userEvents = await eventsRef
+      .where('friends_confirmed', 'array-contains', userId)
+      .orderBy('date_start', 'asc')
+      .get();
+    const eventsArray = userEvents.docs.map((doc) => {
+      let event = { id: doc.id, ...doc.data() };
+      event.date_start = TimestampToJSDO(event.date_start._seconds);
+      event.date_end = TimestampToJSDO(event.date_end._seconds);
+      return event;
+    });
+    res.send(eventsArray);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+ };
+
+// GET ~/events/{eventId}
 exports.readById = async (req, res) => {
   try {
     const snapshot = await db.collection('events').doc(req.params.eventId).get();
@@ -53,6 +74,7 @@ exports.readById = async (req, res) => {
   }
  };
  
+// PUT ~/events/{eventId}
 exports.updateById = async (req, res) => {
   try {
     await db.collection('events').doc(req.params.eventId).update(req.body);
@@ -62,6 +84,7 @@ exports.updateById = async (req, res) => {
   }
 };
 
+// DELETE ~/events/{eventId}
 exports.deleteById = async (req, res) => {
   try {
     await db.collection('events').doc(req.params.eventId).delete();
