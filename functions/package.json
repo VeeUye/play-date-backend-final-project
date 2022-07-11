@@ -5,6 +5,7 @@
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
+    "test": "mocha src/__tests__/*.js --exit-- recursive --timeout 6000",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
