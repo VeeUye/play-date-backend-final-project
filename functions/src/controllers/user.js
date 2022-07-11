@@ -60,7 +60,19 @@ exports.updateById = async (req, res) => {
 
 exports.deleteById = async (req, res) => {
   try {
-    await db.collection('user').doc(req.params.userId).delete();
+    const batch = db.batch();
+    const FriendsUser = await db
+      .collection('user')
+      .where('friends', 'array-contains', req.params.userId)
+      .get();
+    FriendsUser.docs.forEach((doc) => {
+      const filterFriendsUser = doc
+        .data()
+        .friends.filter((item) => item !== req.params.userId);
+      batch.update(doc.ref, { friends: filterFriendsUser });
+    });
+    batch.delete(db.collection('user').doc(req.params.userId));
+    await batch.commit();
     res.send('Record deleted successfuly');
   } catch (error) {
     res.status(400).send(error.message);
