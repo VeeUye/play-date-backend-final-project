@@ -1,6 +1,6 @@
 'use strict';
 
-const { db } = require('../db');
+const { db, FieldPath } = require('../db');
 
 exports.create = async (req, res) => {
   try {
@@ -28,6 +28,22 @@ exports.readById = async (req, res) => {
   try {
     const snapshot = await db.collection('user').doc(req.params.userId).get();
     res.send({ id: snapshot.id, ...snapshot.data() });
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
+exports.readUserFriends = async (req, res) => {
+  try {
+    const snapshot = await db.collection('user').doc(req.params.userId).get();
+    const userFriendsFilter = await db
+      .collection('user')
+      .where(FieldPath.documentId(), 'in', snapshot.data().friends)
+      .get();
+    const userFriendsArray = userFriendsFilter.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
+    });
+    res.send(userFriendsArray);
   } catch (error) {
     res.status(400).send(error.message);
   }
