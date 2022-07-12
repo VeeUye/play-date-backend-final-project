@@ -5,6 +5,7 @@
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
+    "test": "mocha src/__tests__/*.js --exit-- recursive --timeout 6000",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
@@ -18,12 +19,15 @@
     "firebase-functions": "^3.18.0"
   },
   "devDependencies": {
+    "chai": "^4.3.6",
     "eslint": "^8.19.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.2.4",
     "eslint-plugin-promise": "^6.0.0",
-    "firebase-functions-test": "^0.2.0"
+    "firebase-functions-test": "^0.2.0",
+    "mocha": "^10.0.0",
+    "supertest": "^6.2.4"
   },
   "private": true
 }
