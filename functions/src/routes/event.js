@@ -7,7 +7,9 @@ router.post('/', dataValidation.eventValidation, eventController.create);
 router.get('/', eventController.read);
 router.get('/:eventId', eventController.readById);
 router.get('/user-events/:userId', eventController.readUserEvents);
-router.put('/:eventId', eventController.updateById);
+router.put('/user-events/accept', eventController.acceptInvite);
+router.put('/user-events/decline', eventController.declineInvite);
+// router.put('/:eventId', eventController.updateById);
 router.delete('/:eventId', eventController.deleteById);
 
 module.exports = router;

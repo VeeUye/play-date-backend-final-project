@@ -1,6 +1,6 @@
 'use strict';
  
-const { Timestamp } = require('firebase-admin/firestore');
+const { Timestamp, FieldValue } = require('firebase-admin/firestore');
 const { db } = require('../db');
  
 const JSDOtoTimestamp = (d) => {
@@ -74,6 +74,42 @@ exports.readById = async (req, res) => {
   }
  };
  
+// PUT ~/events/user-events/accept
+exports.acceptInvite = async (req, res) => {
+  try {
+    const { eventId, userId } = req.body;
+    const batch = db.batch();
+  
+    const eventRef = db.collection('events').doc(eventId);
+    batch.update(eventRef, { friends_accepted: FieldValue.arrayUnion(userId)});
+    await batch.commit();
+
+    res.status(200).send('Success - invite accepted');
+  
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+ }
+ 
+// PUT ~/events/user-events/declined
+exports.declineInvite = async (req, res) => {
+  try {
+    const { eventId, userId } = req.body;
+    console.log('userId->',userId);
+    const batch = db.batch();
+    const eventRef = db.collection('events').doc(eventId);
+    batch.update(eventRef, { friends_declined: FieldValue.arrayUnion(userId)});
+    // batch.update(eventRef, { friends_invited: FieldValue.arrayRemove(userId)});
+    await batch.commit();
+
+    res.status(200).send('Success - invite declined');
+  
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+ }
+
+
 // PUT ~/events/{eventId}
 exports.updateById = async (req, res) => {
   try {
