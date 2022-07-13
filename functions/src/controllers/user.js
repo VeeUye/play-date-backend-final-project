@@ -1,6 +1,6 @@
 'use strict';
 
-const { db, FieldPath } = require('../db');
+const { db } = require('../db');
 
 exports.create = async (req, res) => {
   try {
@@ -26,8 +26,14 @@ exports.read = async (_, res) => {
 
 exports.readById = async (req, res) => {
   try {
-    const snapshot = await db.collection('user').doc(req.params.userId).get();
-    res.send({ id: snapshot.id, ...snapshot.data() });
+    const snapshot = await db
+      .collection('user')
+      .where('userId', '==', req.params.userId)
+      .get()
+      .then((query) => {
+        return query.docs[0].data();
+      });
+    res.send(snapshot);
   } catch (error) {
     res.status(400).send(error.message);
   }
@@ -35,10 +41,16 @@ exports.readById = async (req, res) => {
 
 exports.readUserFriends = async (req, res) => {
   try {
-    const snapshot = await db.collection('user').doc(req.params.userId).get();
+    const snapshot = await db
+      .collection('user')
+      .where('userId', '==', req.params.userId)
+      .get()
+      .then((query) => {
+        return query.docs[0].data();
+      });
     const userFriendsFilter = await db
       .collection('user')
-      .where(FieldPath.documentId(), 'in', snapshot.data().friends)
+      .where('userId', 'in', snapshot.friends)
       .get();
     const userFriendsArray = userFriendsFilter.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };
@@ -51,7 +63,14 @@ exports.readUserFriends = async (req, res) => {
 
 exports.updateById = async (req, res) => {
   try {
-    await db.collection('user').doc(req.params.userId).update(req.body);
+    const snapshot = await db
+      .collection('user')
+      .where('userId', '==', req.params.userId)
+      .get()
+      .then((query) => {
+        return query.docs[0].id;
+      });
+    await db.collection('user').doc(snapshot).update(req.body);
     res.send('Record updated successfuly');
   } catch (error) {
     res.status(400).send(error.message);
