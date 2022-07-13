@@ -63,23 +63,26 @@ describe('POST events tests', () => {
 
 
 describe('PUT accept event', () => {
-  const event1 = {
-    date_start : "Sat Dec 10 2022 11:30:00 GMT+0100",
-    date_end : "Sat Dec 10 2022 13:30:00 GMT+0100",
-    friends_invited : ["userId2", "userId3", "userId4"],
-    friends_accepted : ["userId2", "userId3"],
-    location : "Lancaster",
-    description : "Event5",
-    owner : "userId4"
-  }
-  
+
+  before( async () => {
+    const batch = db.batch();
+    const eventRef = db.collection('events')
+    let data = DUMMY_DATA;
+    data.forEach((item,i)=>{
+      item.date_start = JSDOtoTimestamp(item.date_start);
+      item.date_end = JSDOtoTimestamp(item.date_end);
+      batch.set(eventRef.doc(`Event${i+1}`), item);
+    })
+    await batch.commit();
+  })
+
   it('PUT userId4 to accept invite', async () => {
     const res = await request(app)
-    .post('/events')
-    .send(event1);
+    .put('/events/user-events/accept')
+    .send({"eventId":"Event3","userId":"userId3"});
   
-    expect(res.status).to.equal(201);
-    expect(res.text).to.equal('Record saved successfuly');
+    expect(res.status).to.equal(200);
+    expect(res.text).to.equal('Success - invite accepted');
   });
   
 })
