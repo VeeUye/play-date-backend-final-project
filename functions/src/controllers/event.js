@@ -46,7 +46,7 @@ exports.create = async (req, res) => {
     const {userId} = req.params; 
     const eventsRef = db.collection('events');
     const userEvents = await eventsRef
-      .where('friends_confirmed', 'array-contains', userId)
+      .where('friends_accepted', 'array-contains', userId)
       .orderBy('date_start', 'asc')
       .get();
     const eventsArray = userEvents.docs.map((doc) => {
@@ -95,7 +95,6 @@ exports.acceptInvite = async (req, res) => {
 exports.declineInvite = async (req, res) => {
   try {
     const { eventId, userId } = req.body;
-    console.log('userId->',userId);
     const batch = db.batch();
     const eventRef = db.collection('events').doc(eventId);
     batch.update(eventRef, { friends_declined: FieldValue.arrayUnion(userId)});
