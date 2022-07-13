@@ -10,6 +10,8 @@ const JSDOtoTimestamp = (d) => {
  return Timestamp.fromDate(new Date(d));
 }
 
+
+
 describe('GET events tests', () => {
   before('test data into db', async () => {
     let data = DUMMY_DATA;
@@ -42,7 +44,7 @@ describe('POST events tests', () => {
     date_start : "Sat Dec 10 2022 11:30:00 GMT+0100",
     date_end : "Sat Dec 10 2022 13:30:00 GMT+0100",
     friends_invited : ["userId2", "userId3", "userId4"],
-    friends_confirmed : ["userId2", "userId3"],
+    friends_accepted : ["userId2", "userId3"],
     location : "Lancaster",
     description : "Event5",
     owner : "userId4"
@@ -58,4 +60,27 @@ describe('POST events tests', () => {
   });
   
 });
+
+
+describe('PUT accept event', () => {
+  const event1 = {
+    date_start : "Sat Dec 10 2022 11:30:00 GMT+0100",
+    date_end : "Sat Dec 10 2022 13:30:00 GMT+0100",
+    friends_invited : ["userId2", "userId3", "userId4"],
+    friends_accepted : ["userId2", "userId3"],
+    location : "Lancaster",
+    description : "Event5",
+    owner : "userId4"
+  }
+  
+  it('PUT userId4 to accept invite', async () => {
+    const res = await request(app)
+    .post('/events')
+    .send(event1);
+  
+    expect(res.status).to.equal(201);
+    expect(res.text).to.equal('Record saved successfuly');
+  });
+  
+})
  
