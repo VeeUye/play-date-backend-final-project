@@ -13,7 +13,7 @@ const DUMMY_DATA = [
     name : "Event number 2",
     date_start : "Thu Aug 11 2022 17:30:00 GMT+0100",
     date_end : "Thu Aug 11 2022 17:30:00 GMT+0100",
-    friends_invited : ["userId5"],
+    friends_invited : ["userId1"],
     friends_accepted : ["userId2", "userId4"],
     friends_declined : ["userId3"],
     location : "Manchester",
