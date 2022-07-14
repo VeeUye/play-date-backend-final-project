@@ -89,7 +89,7 @@ describe('POST events tests', () => {
     .send(event5);
   
     expect(res.status).to.equal(201);
-    expect(res.text).to.equal('Record saved successfuly');
+    expect(res.text).to.equal('Record saved successfully');
   });
 
 });
