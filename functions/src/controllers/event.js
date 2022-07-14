@@ -2,6 +2,7 @@
  
 const { Timestamp, FieldValue } = require('firebase-admin/firestore');
 const { db } = require('../db');
+const { getUserEvents } = require('./helper');
  
 const JSDOtoTimestamp = (d) => {
  return Timestamp.fromDate(new Date(d));
@@ -18,14 +19,14 @@ exports.create = async (req, res) => {
     data.date_start = JSDOtoTimestamp(data.date_start);
     data.date_end = JSDOtoTimestamp(data.date_end);
     await db.collection('events').doc().set(data);
-    res.status(201).send('Record saved successfuly');
+    res.status(201).send('Record saved successfully');
   } catch (error) {
     res.status(400).send(error.message);
   }
  };
- 
+
 // GET ~/events
- exports.read = async (_, res) => {
+exports.read = async (_, res) => {
   try {
     const snapshot = await db.collection('events').get();
     const eventsArray = snapshot.docs.map((doc) => {
@@ -34,31 +35,25 @@ exports.create = async (req, res) => {
       event.date_end = TimestampToJSDO(event.date_end._seconds);
       return event;
     });
-    res.send(eventsArray);
+    res.status(200).send(eventsArray);
   } catch (error) {
     res.status(400).send(error.message);
   }
  };
 
-//  GET ~/events/user-events/{userId}
- exports.readUserEvents = async (req, res) => {
-  try {
-    const {userId} = req.params; 
-    const eventsRef = db.collection('events');
-    const userEvents = await eventsRef
-      .where('friends_accepted', 'array-contains', userId)
-      .orderBy('date_start', 'asc')
-      .get();
-    const eventsArray = userEvents.docs.map((doc) => {
-      let event = { id: doc.id, ...doc.data() };
-      event.date_start = TimestampToJSDO(event.date_start._seconds);
-      event.date_end = TimestampToJSDO(event.date_end._seconds);
-      return event;
-    });
-    res.send(eventsArray);
-  } catch (error) {
-    res.status(400).send(error.message);
-  }
+//  GET ~/events/user-events/{userId}/
+exports.readAcceptedUserEvents = (req, res) => {
+  getUserEvents(req, res, 'accepted');
+};
+
+  //  GET ~/events/user-events/{userId}/pending
+exports.readPendingUserEvents = (req, res) => {
+  getUserEvents(req, res, 'invited');
+ };
+
+ // GET ~/events/user-events/{userId}/declined
+ exports.readDeclinedUserEvents = (req, res) => {
+  getUserEvents(req, res, 'declined');
  };
 
 // GET ~/events/{eventId}
@@ -82,6 +77,7 @@ exports.acceptInvite = async (req, res) => {
   
     const eventRef = db.collection('events').doc(eventId);
     batch.update(eventRef, { friends_accepted: FieldValue.arrayUnion(userId)});
+    batch.update(eventRef, { friends_invited: FieldValue.arrayRemove(userId)});
     await batch.commit();
 
     res.status(200).send('Success - invite accepted');
@@ -98,7 +94,7 @@ exports.declineInvite = async (req, res) => {
     const batch = db.batch();
     const eventRef = db.collection('events').doc(eventId);
     batch.update(eventRef, { friends_declined: FieldValue.arrayUnion(userId)});
-    // batch.update(eventRef, { friends_invited: FieldValue.arrayRemove(userId)});
+    batch.update(eventRef, { friends_invited: FieldValue.arrayRemove(userId)});
     await batch.commit();
 
     res.status(200).send('Success - invite declined');
