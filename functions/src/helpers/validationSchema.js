@@ -1,6 +1,7 @@
 const Joi = require ('joi');
 
 const eventSchema = Joi.object({
+  name: Joi.string().required(),
   date_start: Joi.date().greater('now').required(),
   date_end: Joi.date().greater(Joi.ref('date_start')).required(),
   friends_invited: Joi.array().items(Joi.string()),
