@@ -15,6 +15,7 @@
   "main": "index.js",
   "dependencies": {
     "cors": "^2.8.5",
+    "firebase": "^9.9.0",
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.18.0",
     "joi": "^17.6.0"
