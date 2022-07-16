@@ -1,5 +1,5 @@
 const { postEventSchema, putEventSchema } = require('../models/eventSchema');
-const { createUserSchema, editUserSchema } = require('../models/userSchema');
+const { postUserSchema, putUserSchema } = require('../models/userSchema');
 const validateData = require('./helpers');
  
 exports.postEventValidation = (req, res, next) => {
@@ -10,10 +10,10 @@ exports.putEventValidation = (req, res, next) => {
   validateData(req, res, next, putEventSchema);
 };
  
-exports.createUserValidation = (req, res, next) => {
-  validateData(req, res, next, createUserSchema);
+exports.postUserValidation = (req, res, next) => {
+  validateData(req, res, next, postUserSchema);
 };
  
-exports.editUserValidation = (req, res, next) => {
-  validateData(req, res, next, editUserSchema);
+exports.putUserValidation = (req, res, next) => {
+  validateData(req, res, next, putUserSchema);
 };
