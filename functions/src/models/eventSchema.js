@@ -1,6 +1,7 @@
 const Joi = require ('joi');
  
 const eventSchema = Joi.object({
+  eventId: Joi.string(),
   name: Joi.string()
     .alter({
       post: (schema) => schema.required(),
@@ -37,5 +38,10 @@ const eventSchema = Joi.object({
  const postEventSchema = eventSchema.tailor('post');
  const putEventSchema = eventSchema.tailor('put');
  
- 
-module.exports = {postEventSchema, putEventSchema};
+ const eventAcceptDeclineSchema = Joi.object({
+  eventId: Joi.string(),
+  userId: Joi.string()
+});
+
+
+module.exports = {postEventSchema, putEventSchema, eventAcceptDeclineSchema};
