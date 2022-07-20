@@ -95,6 +95,7 @@ exports.declineInvite = async (req, res) => {
     const eventRef = db.collection('events').doc(eventId);
     batch.update(eventRef, { friends_declined: FieldValue.arrayUnion(userId)});
     batch.update(eventRef, { friends_invited: FieldValue.arrayRemove(userId)});
+    batch.update(eventRef, { friends_accepted: FieldValue.arrayRemove(userId)});
     await batch.commit();
 
     res.status(200).send('Success - invite declined');
